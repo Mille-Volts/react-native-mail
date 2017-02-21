@@ -54,7 +54,7 @@ public class RNMailModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void mail(ReadableMap options, Callback callback) {
     Intent i = new Intent(Intent.ACTION_SEND_MULTIPLE);
-    i.setType("text/plain");
+    i.setType("vnd.android.cursor.dir/email");
 
     if (options.hasKey("subject") && !options.isNull("subject")) {
       i.putExtra(Intent.EXTRA_SUBJECT, options.getString("subject"));
@@ -110,7 +110,13 @@ public class RNMailModule extends ReactContextBaseJavaModule {
         callback.invoke("error");
       }
     } else {
-      Intent chooser = Intent.createChooser(i, "Send Mail");
+      String chooserLabel;
+      if (options.hasKey("chooserLabel") && !options.isNull("chooserLabel")) {
+        chooserLabel = options.getString("chooserLabel");
+      } else {
+        chooserLabel = "Send Mail";
+      }
+      Intent chooser = Intent.createChooser(i, chooserLabel);
       chooser.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
       try {
